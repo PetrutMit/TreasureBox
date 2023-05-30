@@ -162,7 +162,7 @@ boolean validateKnock(){
       secretKnockCount ++;
     }
     
-    if (knockReadings[i] > maxKnockInterval){ 	// collect normalization data while we're looping.
+    if (knockReadings[i] > maxKnockInterval){ 	// get max value
       maxKnockInterval = knockReadings[i];
     }
   }
@@ -184,24 +184,20 @@ boolean validateKnock(){
         SET_LOW(PORTD, redLED);
         // only turn it on if there's a delay
         if (secretCode[i] > 0){                                   
-          delay(map(secretCode[i],0, 100, 0, maxKnockInterval)); // Expand the time back out to what it was.  Roughly.
+          delay(map(secretCode[i],0, 100, 0, maxKnockInterval)); // Light leds to see new code
           SET_HIGH(PORTD, greenLED);
           SET_HIGH(PORTD, redLED);
         }
         delay(50);
       }
-	  return false; 	// We don't unlock the door when we are recording a new knock.
+	  return false;
   }
   
   if (currentKnockCount != secretKnockCount){
     return false; 
   }
   
-  /*  Now we compare the relative intervals of our knocks, not the absolute time between them.
-      (ie: if you do the same pattern slow or fast it should still open the door.)
-      This makes it less picky, which while making it less secure can also make it
-      less of a pain to use if you're tempo is a little slow or fast. 
-  */
+  //  Now we compare the relative intervals of our knocks, not the absolute time between them.
   int totaltimeDifferences = 0;
   int timeDiff = 0;
   for (i = 0; i < maximumKnocks; i++){ // Normalize the times
@@ -254,7 +250,8 @@ void loop() {
   }
   knockSensorValue = analogRead(knockSensor);
 
-  if (READ(PIND, programSwitch) == LOW){  // is the program button pressed?                                       // this button works in negative logic, so LOW means the button is pressed.  
+// this button works in negative logic, so LOW means the button is pressed
+  if (READ(PIND, programSwitch) == LOW){  // is the program button pressed?  
     programButtonPressed = true;          // Yes, so lets save that state
     SET_HIGH(PORTD, redLED);              // and turn on the red light too so we know we're programming.
   } else {
